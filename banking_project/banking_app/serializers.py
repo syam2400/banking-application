@@ -47,3 +47,7 @@ class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = ('id', 'user', 'amount', 'description', 'timestamp')
+
+class App_register_serializers(serializers.Serializer):
+    username = serializers.CharField(max_length=100)
+    account_number = serializers.CharField(max_length=20)
