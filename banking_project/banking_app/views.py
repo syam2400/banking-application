@@ -67,32 +67,6 @@ class RegisterUser(generics.CreateAPIView):
 
 
 
-# class PasswordResetView(viewsets.ViewSet):
-#     # authentication_classes = [TokenAuthentication]
-#     permission_classes = [AllowAny]
-
-#     def initiate_reset(self, request):
-#         user = request.user  # Assuming user is authenticated
-#         email = user.email
-
-#         # Generate and send reset token
-#         token_generator = PasswordResetTokenGenerator()
-#         token = token_generator.make_token(user)
-#         send_mail(
-#             'Password Reset Request',
-#             f'Click here to reset your password: http://your-domain.com/reset/{token}/',
-#             'from@your-domain.com',
-#             [email],
-#             fail_silently=False
-#         )
-#         return Response({'message': 'Password reset email sent.'}, status=status.HTTP_200_OK)
-
-#     def reset_password(self, request, token):
-#         # Validate token, reset password, etc.
-#         # ... (implementation omitted for security reasons)
-#         return Response({'message': 'Password reset successfully.'}, status=status.HTTP_200_OK)
-
-
 class User_registration_and_mpin(APIView):
    permission_classes =  [AllowAny]
     # queryset = CustomUser.objects.all()
@@ -131,7 +105,7 @@ class User_registration_and_mpin(APIView):
 
             return Response(input_data_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
    
-   
+
         
 class Reset_password(APIView):
       permission_classes =  [AllowAny]
