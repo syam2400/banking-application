@@ -17,15 +17,29 @@ Including another URLconf
 
 
 from banking_app import views
-from django.urls import path
-from .views import RegisterUser,Profile_details_view
+from django.urls import path,include
+from rest_framework.routers import DefaultRouter
+from .views import UserLoginAPIView, CustomerViewSet, AccountViewSet
+from .views import UserViewSet, PasswordResetRequestViewSet
+
 
 
 
 urlpatterns = [
-  path('register_user/',views.RegisterUser.as_view()),
-  path('profile-view/',views.Profile_details_view.as_view())
+ 
+
+
+]
+# from .views import RegisterUser,Profile_details_view
+
+
+
+# urlpatterns = [
+#   path('register_user/',views.RegisterUser.as_view()),
+#   path('profile-view/',views.Profile_details_view.as_view())
 
  
-]
+# ]
+
+
 
