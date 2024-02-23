@@ -16,30 +16,16 @@ Including another URLconf
 """
 
 
-from banking_app import views
-from django.urls import path,include
-from rest_framework.routers import DefaultRouter
-from .views import UserLoginAPIView, CustomerViewSet, AccountViewSet
-from .views import UserViewSet, PasswordResetRequestViewSet
 
-
-
+from django.urls import path
+from banking_app.views import *
 
 urlpatterns = [
- 
-
+  path('register_user/',RegisterUser.as_view()),
+#   path('registered-user-details/<int:pk>/',Registered_user_details.as_view()),
+  path('user-login-get-token/',UserLoginAPIView.as_view()),
+  path('api/logout/', LogoutView.as_view(), name='auth_logout'),
+  path('user-profile-view/<int:pk>/',UserProfileview.as_view())
 
 ]
-# from .views import RegisterUser,Profile_details_view
-
-
-
-# urlpatterns = [
-#   path('register_user/',views.RegisterUser.as_view()),
-#   path('profile-view/',views.Profile_details_view.as_view())
-
- 
-# ]
-
-
 
