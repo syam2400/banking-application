@@ -1,9 +1,12 @@
-
 from rest_framework import serializers
 from .models import CustomUser
+from .models import MPIN
+from django.contrib.auth.models import User
+from .models import Transaction
 
 
-#serilizers for user registerations
+
+#serializers for user registerations
 class UserSerializer(serializers.ModelSerializer):
     mpin = serializers.CharField(write_only=True)
 
@@ -34,3 +37,13 @@ class Profileview_serializers(serializers.ModelSerializer):
 class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=150)
     mpin = serializers.CharField(max_length=128, write_only=True)
+
+class MPINSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MPIN
+        fields = ('mpin',)
+
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = ('id', 'user', 'amount', 'description', 'timestamp')

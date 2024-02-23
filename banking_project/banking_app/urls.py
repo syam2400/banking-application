@@ -22,8 +22,9 @@ from banking_app.views import *
 
 urlpatterns = [
   path('register_user/',RegisterUser.as_view()),
-#   path('registered-user-details/<int:pk>/',Registered_user_details.as_view()),
+# path('registered-user-details/<int:pk>/',Registered_user_details.as_view()),
   path('user-login-get-token/',UserLoginAPIView.as_view()),
+  path('api/reset-mpin/', reset_mpin, name='reset_mpin'),
   path('api/logout/', LogoutView.as_view(), name='auth_logout'),
   path('user-profile-view/<int:pk>/',UserProfileview.as_view())
 

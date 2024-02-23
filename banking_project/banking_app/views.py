@@ -1,25 +1,29 @@
 from django import http
 from django.shortcuts import render
-
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view,permission_classes
 from .models import CustomUser
-from .serializers import  UserSerializer,UserLoginSerializer,Profileview_serializers
+from .models import MPIN
+from .serializers import  UserSerializer,UserLoginSerializer,Profileview_serializers,MPINSerializer
 from .models import User, PasswordResetRequest,Transaction
 from .serializers import UserSerializer, PasswordResetRequestSerializer,TransactionSerializer
 # from .serializers import UserSerializer,Profileview_serializers
 from rest_framework import status
-
 from rest_framework import generics
-
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.permissions import AllowAny
-
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
+from your_app.views import reset_mpin
+from .models import Transaction
+from .serializers import TransactionSerializer
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+# from .models import Customer, Account
 
 
 # registration class for signup and get the registered user details 
@@ -55,14 +59,7 @@ class User_app_registration(APIView):
     def put(self, request):
         user = CustomUser.objects.get(username=request.user.name,  account_number=request.user.account_number )
 
- 
-
-
-
-
-
-   
-#login user with returned token with user data
+ #login user with returned token with user data
 class UserLoginAPIView(generics.CreateAPIView):
     permission_classes =  [AllowAny]
     queryset = CustomUser.objects.all()
@@ -107,8 +104,6 @@ class LogoutView(APIView):
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         
-
-
 #to view the details of particular logged user
 class UserProfileview(generics.RetrieveUpdateDestroyAPIView):
     permission_classes =  [AllowAny]
@@ -118,14 +113,41 @@ class UserProfileview(generics.RetrieveUpdateDestroyAPIView):
     # def get(self, request):
     #     user = self.request.user0
     #     user_details = CustomUser.objects.get(id=user)
-    #     user_serilizers = Profileview_serializers(user_details)
-    #     if user_serilizers.is_valid():
-    #         user_serilizers.save()
-    #         return Response(user_serilizers.data, status=status.HTTP_200_OK)
+    #     user_serializers = Profileview_serializers(user_details)
+    #     if user_serializers.is_valid():
+    #         user_serializers.save()
+    #         return Response(user_serializers.data, status=status.HTTP_200_OK)
     #     else:
     #         return Response({'error':'invalid'},status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def reset_mpin(request):
+    serializer = MPINSerializer(data=request.data)
+    if serializer.is_valid():
+        mpin = serializer.validated_data['mpin']
+        user = request.user
+        mpin_obj, created = MPIN.objects.get_or_create(user=user)
+        mpin_obj.mpin = mpin
+        mpin_obj.save()
+        return Response({"message": "MPIN reset successfully"}, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_transaction(request):
+    serializer = TransactionSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_transactions(request):
+    transactions = Transaction.objects.filter(user=request.user)
+    serializer = TransactionSerializer(transactions, many=True)
+    return Response(serializer.data)
 
 
-from rest_framework.permissions import IsAuthenticated
-from .models import Customer, Account
 

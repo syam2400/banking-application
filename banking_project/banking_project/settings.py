@@ -39,12 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles','rest_framework','banking_app',
     'rest_framework_simplejwt.token_blacklist','rest_framework_simplejwt',
+    'rest_framework_jwt',
 ]
 
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 
      'DEFAULT_AUTHENTICATION_CLASSES': (
