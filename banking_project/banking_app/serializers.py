@@ -33,3 +33,7 @@ class Profileview_serializers(serializers.ModelSerializer):
 class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=150)
     mpin = serializers.CharField(max_length=128, write_only=True)
+
+class App_register_serializers(serializers.Serializer):
+    username = serializers.CharField(max_length=100)
+    account_number = serializers.CharField(max_length=20)

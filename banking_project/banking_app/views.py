@@ -4,7 +4,7 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import CustomUser
-from .serializers import  UserSerializer,UserLoginSerializer,Profileview_serializers
+from .serializers import  UserSerializer,UserLoginSerializer,Profileview_serializers,App_register_serializers
 from rest_framework import status
 
 from rest_framework import generics
@@ -18,6 +18,23 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 
 
+#for new mpin setup and app registration
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.core.mail import send_mail
+from rest_framework import status, viewsets
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str
+
+from django.contrib.auth.password_validation import validate_password
+from rest_framework.exceptions import ValidationError
+
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 # registration class for signup and get the registered user details 
 class RegisterUser(generics.CreateAPIView):
     permission_classes =  [AllowAny]
@@ -47,14 +64,104 @@ class RegisterUser(generics.CreateAPIView):
     #         return Response(register_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class User_app_registration(APIView):
-    def put(self, request):
-        user = CustomUser.objects.get(username=request.user.name,  account_number=request.user.account_number )
-
- 
 
 
 
+# class PasswordResetView(viewsets.ViewSet):
+#     # authentication_classes = [TokenAuthentication]
+#     permission_classes = [AllowAny]
+
+#     def initiate_reset(self, request):
+#         user = request.user  # Assuming user is authenticated
+#         email = user.email
+
+#         # Generate and send reset token
+#         token_generator = PasswordResetTokenGenerator()
+#         token = token_generator.make_token(user)
+#         send_mail(
+#             'Password Reset Request',
+#             f'Click here to reset your password: http://your-domain.com/reset/{token}/',
+#             'from@your-domain.com',
+#             [email],
+#             fail_silently=False
+#         )
+#         return Response({'message': 'Password reset email sent.'}, status=status.HTTP_200_OK)
+
+#     def reset_password(self, request, token):
+#         # Validate token, reset password, etc.
+#         # ... (implementation omitted for security reasons)
+#         return Response({'message': 'Password reset successfully.'}, status=status.HTTP_200_OK)
+
+
+class User_registration_and_mpin(APIView):
+   permission_classes =  [AllowAny]
+    # queryset = CustomUser.objects.all()
+    # serializer_class = UserSerializer
+   
+   def post(self, request, *args, **kwargs):
+       
+            input_data_serializer = App_register_serializers(data=request.data)
+            if input_data_serializer.is_valid():
+                username = input_data_serializer.validated_data.get('username')
+                account_number = input_data_serializer.validated_data.get('account_number')
+                print (username, account_number)
+
+                try:
+                    user = CustomUser.objects.get(username=username, account_number=account_number)
+                    user_email = user.email
+                    uid = user.id
+                    uidb64 = urlsafe_base64_encode(force_bytes(uid))
+                   
+                       # Generate and send reset token
+                    token_generator = PasswordResetTokenGenerator()
+                    token = token_generator.make_token(user)
+                    send_mail(
+                        'Password Reset Request',
+                        f'Click here to reset your password: http://127.0.0.1:8000/password-reset/confirm/{uidb64}/{token}/',
+                        'from@your-domain.com',
+                        [user_email],
+                        fail_silently=False
+                    )
+                    return Response({'message': 'Password reset email sent.'}, status=status.HTTP_200_OK)
+
+                    # user_details_serializer =Profileview_serializers(user)
+                    # return Response(user_details_serializer.data)
+                except CustomUser.DoesNotExist:
+                    return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+            return Response(input_data_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+   
+   
+        
+class Reset_password(APIView):
+      permission_classes =  [AllowAny]
+      def post(self, request, uidb64, token, *args, **kwargs):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = CustomUser.objects.get(id=uid)
+            print(user)
+        except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+            user = None
+
+        if user is not None and PasswordResetTokenGenerator().check_token(user, token):
+            # Extract new password from request data
+            new_password = request.data.get('new_password')
+            password_confirm = request.data.get('password_confirm')
+
+            # Validate the new password
+            if new_password and new_password == password_confirm:
+                try:
+                    validate_password(new_password, user)
+                except ValidationError as e:
+                    return Response({'errors': list(e.messages)}, status=status.HTTP_400_BAD_REQUEST)
+
+                user.set_password(new_password)
+                user.save()
+                return Response({'message': 'Password has been reset successfully.'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Password does not match the confirm password or is not provided.'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'error': 'Token is invalid'}, status=status.HTTP_400_BAD_REQUEST)
 
 
    
