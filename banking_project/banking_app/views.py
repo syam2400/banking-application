@@ -1,10 +1,11 @@
 from django import http
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import CustomUser
-from .serializers import  UserSerializer,UserLoginSerializer,Profileview_serializers,App_register_serializers
+from .models import CustomUser, Fund_transfer
+from .serializers import *
+
 from rest_framework import status
 
 from rest_framework import generics
@@ -35,6 +36,9 @@ from rest_framework.exceptions import ValidationError
 
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
+
+from django.db import transaction
+
 # registration class for signup and get the registered user details 
 class RegisterUser(generics.CreateAPIView):
     permission_classes =  [AllowAny]
@@ -123,11 +127,11 @@ class Reset_password(APIView):
             password_confirm = request.data.get('password_confirm')
 
             # Validate the new password
-            if new_password and new_password == password_confirm:
-                try:
-                    validate_password(new_password, user)
-                except ValidationError as e:
-                    return Response({'errors': list(e.messages)}, status=status.HTTP_400_BAD_REQUEST)
+            if new_password.isdigit() and new_password == password_confirm:
+                # try:
+                #     validate_password(new_password, user)
+                # except ValidationError as e:
+                #     return Response({'errors': list(e.messages)}, status=status.HTTP_400_BAD_REQUEST)
 
                 user.set_password(new_password)
                 user.save()
@@ -192,13 +196,106 @@ class UserProfileview(generics.RetrieveUpdateDestroyAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = Profileview_serializers
 
-    # def get(self, request):
-    #     user = self.request.user0
-    #     user_details = CustomUser.objects.get(id=user)
-    #     user_serilizers = Profileview_serializers(user_details)
-    #     if user_serilizers.is_valid():
-    #         user_serilizers.save()
-    #         return Response(user_serilizers.data, status=status.HTTP_200_OK)
-    #     else:
-    #         return Response({'error':'invalid'},status=status.HTTP_400_BAD_REQUEST)
 
+#FUND TRANSFER TO SAME BANK USER
+class Fund_Transfer_views(APIView):
+    permission_classes = [AllowAny]
+   
+    def post(self, request, *args, **kwargs):
+        
+        transfer_serializer = Fund_transfer_serializers(data=request.data)
+        
+        if  transfer_serializer.is_valid():
+    
+            user = get_object_or_404(CustomUser, username=transfer_serializer.validated_data.get('sender_user'))
+            account_holder_name = get_object_or_404(CustomUser, username=request.data.get('receiving_account_holder_name'))
+           
+
+            confirmation_mpin = int(request.data.get('mpin'))
+            amount = int(request.data.get('amount'))
+
+            if request.data['account_number'] != request.data.get('confirm_account_number'):
+                return Response({"status":"Account number and confirm account number must match."},status=status.HTTP_401_UNAUTHORIZED)
+            
+            if int(request.data.get('confirm_account_number')) !=  int(account_holder_name.account_number):
+                 return Response({"status":"Account number and acounnt holder name must match."},status=status.HTTP_401_UNAUTHORIZED)
+            
+            if user.account_balance < amount:  
+                return Response({'error': 'Insufficient balance'}, status=status.HTTP_204_NO_CONTENT)
+          
+          
+            user = authenticate(username=user.username, password=confirmation_mpin)
+            if user is not None:
+                with transaction.atomic():
+                        user.account_balance -= amount
+                        user.save()
+
+                        account_holder_name.account_balance += amount
+                        account_holder_name.save()
+
+                        # Create the Fund_transfer object
+                        confirm_transfer = Fund_transfer.objects.create(sender_user=user,account_number=account_holder_name.account_number,
+                                                                        ifsc=request.data.get('ifsc'),receiving_account_holder_name=account_holder_name,
+                                                                        amount=amount)
+                      
+                        print('confirm_transfer')
+                        return Response({'message':'fund tranfered succesfully'}, status=status.HTTP_201_CREATED)
+            else:      
+              return Response({'message':"invalid mpin"}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+        else:
+            return Response( transfer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+#fund transfer to other banks
+class OtherBank_Fund_Transfer_views(APIView):
+    permission_classes = [AllowAny]
+   
+    def post(self, request, *args, **kwargs):
+        
+        transfer_serializer =Fund_transfer_serializers(data=request.data)
+        
+        if  transfer_serializer.is_valid():
+    
+            user = get_object_or_404(CustomUser, username=transfer_serializer.validated_data.get('sender_user'))
+         
+            confirmation_mpin = int(request.data.get('mpin'))
+            amount = int(request.data.get('amount'))
+
+            if request.data['account_number'] != request.data.get('confirm_account_number'):
+                return Response({"status":"Account number and confirm account number must match."},status=status.HTTP_401_UNAUTHORIZED)
+            
+           
+            if user.account_balance < amount:  
+                return Response({'error': 'Insufficient balance'}, status=status.HTTP_204_NO_CONTENT)
+          
+          
+            user = authenticate(username=user.username, password=confirmation_mpin)
+            if user is not None:
+                with transaction.atomic():
+                        user.account_balance -= amount
+                        user.save()
+
+                        confirm_transfer = Fund_transfer.objects.create(sender_user=user,account_number=request.data.get('confirm_account_number'),
+                                                                        ifsc=request.data.get('ifsc'),
+                                                                        fund_receiving_other_bank_user=request.data.get('receiving_account_holder_name'),
+                                                                        amount=amount)
+                      
+                        print('confirm_transfer')
+                        return Response({'message':'fund tranfered succesfully'}, status=status.HTTP_201_CREATED)
+            else:      
+              return Response({'message':"invalid mpin"}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+        else:
+            return Response( transfer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+#when user completed tha transaction next step will be entering the mpin ,with front end should pass the sender and receiver data
+
+
+#USER TRANSACTIONS DETAILS
+class LoggedUserTransactionsDetails(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [AllowAny]
+    queryset = Fund_transfer.objects.all()
+    serializer_class = User_fund_transfer_serializers
+    lookup_fields = 'id'

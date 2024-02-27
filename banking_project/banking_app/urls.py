@@ -26,14 +26,20 @@ from banking_app.views import *
 
 
 urlpatterns = [
-  path('register_user/',RegisterUser.as_view()),
+  path('register-user/',RegisterUser.as_view()),
 #   path('registered-user-details/<int:pk>/',Registered_user_details.as_view()),
   path('user-login-get-token/',UserLoginAPIView.as_view()),
   path('api/logout/', LogoutView.as_view(), name='auth_logout'),
   path('user-profile-view/<int:pk>/',UserProfileview.as_view()),
 
   path('password-reset-view/',User_registration_and_mpin.as_view(),name='initiate-password-reset'),
-  path('password-reset/confirm/<str:uidb64>/<str:token>/',Reset_password.as_view(),name='reset-password')
+  path('password-reset/confirm/<str:uidb64>/<str:token>/',Reset_password.as_view(),name='reset-password'),
+
+  path('fund-transfer/',Fund_Transfer_views.as_view(),name='fund-transfer'),#for money transactions
+  path('other-transactions/',OtherBank_Fund_Transfer_views.as_view(),name='other-transactions'), #for other bank fund transfer
+  path('user-fund-transfer-details/<int:id>/', LoggedUserTransactionsDetails.as_view(),name='user-fund-transfer-details') ,# retrive logged user transaction details details from
+
+
   
 
 ]
