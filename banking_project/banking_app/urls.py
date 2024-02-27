@@ -19,6 +19,17 @@ Including another URLconf
 
 from django.urls import path
 from banking_app.views import *
+from rest_framework import routers
+from .views import LoanApplicationViewSet
+
+router = routers.DefaultRouter()
+router.register(r'loan-applications', LoanApplicationViewSet)
+
+urlpatterns = [
+    # Add other URL patterns as needed
+]
+
+urlpatterns += router.urls
 
 # from rest_framework.routers import SimpleRouter
 # from .views import PasswordResetView
@@ -34,7 +45,8 @@ urlpatterns = [
   path('user-profile-view/<int:pk>/',UserProfileview.as_view()),
 
   path('password-reset-view/',User_registration_and_mpin.as_view(),name='initiate-password-reset'),
-  path('password-reset/confirm/<str:uidb64>/<str:token>/',Reset_password.as_view(),name='reset-password')
+  path('password-reset/confirm/<str:uidb64>/<str:token>/',Reset_password.as_view(),name='reset-password'),
+  path('LoanApplicationViewSet/',LoanApplicationViewSet.api_view(),name='LoanApplicationViewSet')
   
 
 ]

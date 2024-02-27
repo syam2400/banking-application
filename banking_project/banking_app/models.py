@@ -41,3 +41,17 @@ class Transaction(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.amount}"
 
+class LoanApplication(models.Model):
+    APPLICANT_STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('APPROVED', 'Approved'),
+        ('REJECTED', 'Rejected'),
+    ]
+    applicant = models.ForeignKey(User, on_delete=models.CASCADE)
+    amount_requested = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=APPLICANT_STATUS_CHOICES, default='PENDING')
+    # Add other fields as needed
+
+    def __str__(self):
+        return f"{self.applicant.username}'s Loan Application"
+

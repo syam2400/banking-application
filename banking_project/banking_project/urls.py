@@ -17,13 +17,13 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path,include
-from transactions.views import create_transaction, get_transactions
+# from transactions.views import create_transaction, get_transactions
 
 # from banking_app.views import LoginView
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
-from rest_framework_simplejwt.views import (
-    TokenRefreshView,
-)
+
 
 
 urlpatterns = [
@@ -33,5 +33,6 @@ urlpatterns = [
     path('api/get-transactions/', get_transactions, name='get_transactions'),
     # path('login/token/', LoginView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
   
 ]

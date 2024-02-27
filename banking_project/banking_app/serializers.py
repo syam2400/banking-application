@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from .models import LoanApplication
 from .models import CustomUser
 from .models import MPIN
 from django.contrib.auth.models import User
@@ -51,3 +52,8 @@ class TransactionSerializer(serializers.ModelSerializer):
 class App_register_serializers(serializers.Serializer):
     username = serializers.CharField(max_length=100)
     account_number = serializers.CharField(max_length=20)
+
+class LoanApplicationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LoanApplication
+        fields = '__all__'

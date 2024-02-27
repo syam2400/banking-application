@@ -1,14 +1,13 @@
 from django import http
 from django.shortcuts import render
+from .models import LoanApplication
+from .serializers import LoanApplicationSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view,permission_classes
-from .models import CustomUser
-from .serializers import  UserSerializer,UserLoginSerializer,Profileview_serializers,App_register_serializers
+from .models import *
+from .serializers import *
 from .models import MPIN
-from .serializers import  UserSerializer,UserLoginSerializer,Profileview_serializers,MPINSerializer
-from .models import User, PasswordResetRequest,Transaction
-from .serializers import UserSerializer, PasswordResetRequestSerializer,TransactionSerializer
 # from .serializers import UserSerializer,Profileview_serializers
 from rest_framework import status
 from rest_framework import generics
@@ -19,31 +18,25 @@ from rest_framework.permissions import AllowAny
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from your_app.views import reset_mpin
+from .views import reset_mpin
+
 from .models import Transaction
 from .serializers import TransactionSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
-# from .models import Customer, Account
-
-
-#for new mpin setup and app registration
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import send_mail
-from rest_framework import status, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
-
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.exceptions import ValidationError
-
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
+from rest_framework.decorators import action
+
 # registration class for signup and get the registered user details 
 class RegisterUser(generics.CreateAPIView):
     permission_classes =  [AllowAny]
@@ -242,6 +235,24 @@ def get_transactions(request):
     transactions = Transaction.objects.filter(user=request.user)
     serializer = TransactionSerializer(transactions, many=True)
     return Response(serializer.data)
+
+class LoanApplicationViewSet(viewsets.ModelViewSet):
+    queryset = LoanApplication.objects.all()
+    serializer_class = LoanApplicationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(applicant=self.request.user)
+
+
+
+# class LoanApplicationViewSet(viewsets.ModelViewSet):
+   
+#     @action(detail=True, methods=['get'])
+#     def status(self, request, pk=None):
+#         loan_application = self.get_object()
+#         return Response({'status': loan_application.status})
+
 
 
 
