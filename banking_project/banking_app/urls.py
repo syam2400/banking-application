@@ -42,14 +42,22 @@ urlpatterns = [
   path('user-login-get-token/',UserLoginAPIView.as_view()),
 #   path('api/reset-mpin/', reset_mpin, name='reset_mpin'),
   path('api/logout/', LogoutView.as_view(), name='auth_logout'),
-  path('user-profile-view/<int:pk>/',UserProfileview.as_view()),
 
-  path('password-reset-view/',User_registration_and_mpin.as_view(),name='initiate-password-reset'),
+  path('user-profile-view/<int:pk>/',UserProfileview.as_view()), #user profile details
+
+  path('password-reset-view/',User_registration_and_mpin.as_view(),name='initiate-password-reset'),#app registration and frogot password
+  #custom template for password reset 
+  path('new-password/confirm/<str:uidb64>/<str:token>/', CustomPasswordResetConfirmView.as_view(), name='new_password_reset_confirm'),
+  #after submit new mpin template  redirect to this class for create a new pin ,,,
   path('password-reset/confirm/<str:uidb64>/<str:token>/',Reset_password.as_view(),name='reset-password'),
 
   path('fund-transfer/',Fund_Transfer_views.as_view(),name='fund-transfer'),#for money transactions
   path('other-transactions/',OtherBank_Fund_Transfer_views.as_view(),name='other-transactions'), #for other bank fund transfer
-  path('user-fund-transfer-details/<int:id>/', LoggedUserTransactionsDetails.as_view(),name='user-fund-transfer-details') ,# retrieve logged user transaction details details from
+
+  path('user-fund-transfer-details/<int:id>/', LoggedUserTransactionsDetails.as_view(),name='user-fund-transfer-details'),# retrive logged user transaction details details from
+  path('user-paybills/',PayBills.as_view(),name='paybills')#bill payment 
+
+  
 
 ]
 

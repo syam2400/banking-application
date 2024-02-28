@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+<title>Creative Colorlib SignUp Form</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+<!-- Custom Theme files -->
+<link href="{% static 'style.css' %}" rel="stylesheet" type="text/css" media="all" />
+<!-- //Custom Theme files -->
+<!-- web font -->
+<link href="//fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i" rel="stylesheet">
+<!-- //web font -->
+
+<script type="text/javascript">
+    // Function to check if the passwords match and are exactly 4 characters
+    function validatePassword() {
+        var newPassword = document.getElementById('new_password').value;
+        var confirmPassword = document.getElementById('password_confirm').value;
+
+        // Check if both MPINs are exactly 4 characters long
+        if (newPassword.length !== 4 || confirmPassword.length !== 4) {
+            alert('The MPIN must be exactly 4 characters long. Please try again.');
+            return false; // Prevent form submission
+        }
+
+        // Check if the MPINs match
+        if (newPassword !== confirmPassword) {
+            alert('The MPINs do not match. Please try again.');
+            return false; // Prevent form submission
+        }
+
+        return true; // Allow form submission
+    }
+
+    window.onload = function() {
+        document.getElementById('passwordForm').onsubmit = validatePassword; // Attach the validation function to the form's submit event
+    };
+</script>
+</head>
+<body>
+    <!-- main -->
+    <div class="main-w3layouts wrapper">
+        <h1>Create new MPIN</h1>
+        <div class="main-agileinfo">
+            <div class="agileits-top">
+                <!-- your_custom_template.html -->
+                <form id="passwordForm" method="post" action="http://127.0.0.1:8000/password-reset/confirm/{{ uidb64 }}/{{ token }}/">
+                    <input class="text" type="hidden" name="uidb64" value="{{ uidb64 }}">
+                    <input class="text" type="hidden" name="token" value="{{ token }}">
+                    <input class="text" type="password" id="new_password" name="new_password" placeholder="New MPIN" required>
+                    <input class="text w3lpass" type="password" id="password_confirm" name="password_confirm" placeholder="Confirm New MPIN" required>
+                    <div class="wthree-text">
+                        <div class="clear"> </div>
+                    </div>
+                    <input type="submit">
+                </form>
+                
+                {% if success_msg %}
+                {{success_msg}}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- //main -->
+</body>
+</html>
