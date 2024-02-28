@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-&i$15jal)9*ia(v6p5htg-k0k*3tj=*u&40s^@3mmt68@_6l+(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -38,9 +38,26 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles','rest_framework','banking_app',
-    'rest_framework_simplejwt.token_blacklist','rest_framework_simplejwt',
+    'django.contrib.staticfiles',
+    'rest_framework',
+    'banking_app',
+    'rest_framework_simplejwt.token_blacklist',
+    'rest_framework_simplejwt',
+    'drf_spectacular',
+    
 ]
+
+
+
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'BANKING APPLICATION API',
+    'DESCRIPTION': 'BANKING APPLICATION API WHICH IS USER FOR BASIC BANKING  FUNCTIONALITIES WITH A SECURED MANNER',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
+}
+
 
 
 REST_FRAMEWORK = {
@@ -51,7 +68,7 @@ REST_FRAMEWORK = {
      'DEFAULT_AUTHENTICATION_CLASSES': (
        
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 

@@ -208,7 +208,7 @@ class LogoutView(APIView):
 
 
 #to view the details of particular logged user
-class UserProfileview(generics.RetrieveUpdateDestroyAPIView):
+class UserProfileview(generics.RetrieveAPIView):
     permission_classes =  [AllowAny]
     queryset = CustomUser.objects.all()
     serializer_class = Profileview_serializers
@@ -363,7 +363,6 @@ class PayBills(APIView):
 
                                                       
             
-
 
 
 

@@ -18,7 +18,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 
-# from banking_app.views import LoginView
+from drf_spectacular.views import *
 
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
@@ -28,7 +28,14 @@ from rest_framework_simplejwt.views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("",include('banking_app.urls')),
-    # path('login/token/', LoginView.as_view(), name='token_obtain_pair'),
+   
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+    # YOUR PATTERNS
+    path('schema/', SpectacularAPIView.as_view(), name='schema'),
+    # Optional UI:
+    path('schema/docs/', SpectacularSwaggerView.as_view(url_name='schema')),
+    # path('schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    
   
 ]
