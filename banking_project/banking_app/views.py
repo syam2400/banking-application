@@ -1,5 +1,6 @@
 from django import http
 from django.shortcuts import get_object_or_404, render
+from django.views import View
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -70,7 +71,7 @@ class RegisterUser(generics.CreateAPIView):
 
 
 
-
+#app registraion and forgot password
 class User_registration_and_mpin(APIView):
    permission_classes =  [AllowAny]
     # queryset = CustomUser.objects.all()
@@ -95,7 +96,7 @@ class User_registration_and_mpin(APIView):
                     token = token_generator.make_token(user)
                     send_mail(
                         'Password Reset Request',
-                        f'Click here to reset your password: http://127.0.0.1:8000/password-reset/confirm/{uidb64}/{token}/',
+                        f'Click here to reset your password: http://127.0.0.1:8000/new-password/confirm/{uidb64}/{token}/',
                         'from@your-domain.com',
                         [user_email],
                         fail_silently=False
@@ -110,7 +111,19 @@ class User_registration_and_mpin(APIView):
             return Response(input_data_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
    
 
-        
+
+
+#email template rendering class for user who get a email with a link which he can add new mpin through a custom template
+class CustomPasswordResetConfirmView(View):
+    def get(self, request, uidb64, token, *args, **kwargs):
+        context = {
+            'uidb64': uidb64,
+            'token': token,
+        }
+        return render(request,'banking_app/templates/email-template.html', context)
+    
+
+ #new mpin creation and validation,from the custom template    
 class Reset_password(APIView):
       permission_classes =  [AllowAny]
       def post(self, request, uidb64, token, *args, **kwargs):
@@ -135,11 +148,15 @@ class Reset_password(APIView):
 
                 user.set_password(new_password)
                 user.save()
-                return Response({'message': 'Password has been reset successfully.'}, status=status.HTTP_200_OK)
+                success_msg = 'Password reset successfully'
+                return render(request,'banking_app/templates/email-template.html',{"success_msg":success_msg})
             else:
-                return Response({'error': 'Password does not match the confirm password or is not provided.'}, status=status.HTTP_400_BAD_REQUEST)
+                # return Response({'error': 'Password does not match the confirm password or is not provided.'}, status=status.HTTP_400_BAD_REQUEST)
+                success_msg = 'Password validation failed re-enter password'
+                return render(request,'banking_app/templates/email-template.html',{"success_msg":success_msg})
         else:
-            return Response({'error': 'Token is invalid'}, status=status.HTTP_400_BAD_REQUEST)
+            success_msg = 'token is invalid create a new requeset'
+            return render(request,'banking_app/templates/email-template.html',{"success_msg":success_msg})
 
 
    
@@ -294,8 +311,18 @@ class OtherBank_Fund_Transfer_views(APIView):
 
 
 #USER TRANSACTIONS DETAILS
-class LoggedUserTransactionsDetails(generics.RetrieveUpdateDestroyAPIView):
+class LoggedUserTransactionsDetails(APIView):
     permission_classes = [AllowAny]
-    queryset = Fund_transfer.objects.all()
-    serializer_class = User_fund_transfer_serializers
-    lookup_fields = 'id'
+    # queryset = Fund_transfer.objects.all()
+    # serializer_class = User_fund_transfer_serializers
+    # lookup_fields = 'id'
+    def get(self, request,id):
+        # logged_user = request.data.get('pk')
+        user = get_object_or_404(CustomUser,id=id)
+        print(user.id)
+        current_user_transaction = Fund_transfer.objects.filter(sender_user=user)
+        print(current_user_transaction)
+        transaction_Serilizer = User_fund_transfer_serializers(current_user_transaction, many=True)
+      
+        return Response(transaction_Serilizer.data,status=status.HTTP_200_OK)
+        
