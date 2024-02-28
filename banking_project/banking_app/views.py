@@ -1,11 +1,9 @@
 from django import http
 from django.shortcuts import get_object_or_404, render
-
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import CustomUser, Fund_transfer
 from .serializers import *
-
 from rest_framework import status
 from rest_framework import generics
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -15,10 +13,8 @@ from rest_framework.permissions import AllowAny
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from .views import reset_mpin
-
-from .models import Transaction
-from .serializers import TransactionSerializer
+# from .views import reset_mpin
+# from .serializers import TransactionSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import send_mail
@@ -34,6 +30,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 
 from django.db import transaction
+
 
 # registration class for signup and get the registered user details 
 class RegisterUser(generics.CreateAPIView):
@@ -217,7 +214,7 @@ class Fund_Transfer_views(APIView):
                 return Response({"status":"Account number and confirm account number must match."},status=status.HTTP_401_UNAUTHORIZED)
             
             if int(request.data.get('confirm_account_number')) !=  int(account_holder_name.account_number):
-                 return Response({"status":"Account number and acounnt holder name must match."},status=status.HTTP_401_UNAUTHORIZED)
+                 return Response({"status":"Account number and account holder name must match."},status=status.HTTP_401_UNAUTHORIZED)
             
             if user.account_balance < amount:  
                 return Response({'error': 'Insufficient balance'}, status=status.HTTP_204_NO_CONTENT)

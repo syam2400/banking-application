@@ -5,10 +5,10 @@ from rest_framework import serializers
 from .models import *
 
 from django.contrib.auth import authenticate
-from django.db import transaction
+# from django.db import transaction
 
 from rest_framework import status
-#serilizers for user registerations
+#serializers for user registerations
 class UserSerializer(serializers.ModelSerializer):
     mpin = serializers.CharField(write_only=True)
 
@@ -40,15 +40,15 @@ class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=150)
     mpin = serializers.CharField(max_length=128, write_only=True)
 
-class MPINSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MPIN
-        fields = ('mpin',)
+# class MPINSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = MPIN
+#         fields = ('mpin',)
 
-class TransactionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Transaction
-        fields = ('id', 'user', 'amount', 'description', 'timestamp')
+# class TransactionSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Transaction
+#         fields = ('id', 'user', 'amount', 'description', 'timestamp')
 
 class App_register_serializers(serializers.Serializer):
     username = serializers.CharField(max_length=100)

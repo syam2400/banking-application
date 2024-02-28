@@ -20,16 +20,16 @@ Including another URLconf
 from django.urls import path
 from banking_app.views import *
 from rest_framework import routers
-from .views import LoanApplicationViewSet
+# from .views import LoanApplicationViewSet
 
-router = routers.DefaultRouter()
-router.register(r'loan-applications', LoanApplicationViewSet)
+# router = routers.DefaultRouter()
+# router.register(r'loan-applications', LoanApplicationViewSet)
 
-urlpatterns = [
-    # Add other URL patterns as needed
-]
+# urlpatterns = [
+#     # Add other URL patterns as needed
+# ]
 
-urlpatterns += router.urls
+# urlpatterns += router.urls
 
 # from rest_framework.routers import SimpleRouter
 # from .views import PasswordResetView
@@ -40,7 +40,7 @@ urlpatterns = [
   path('register-user/',RegisterUser.as_view()),
 #   path('registered-user-details/<int:pk>/',Registered_user_details.as_view()),
   path('user-login-get-token/',UserLoginAPIView.as_view()),
-  path('api/reset-mpin/', reset_mpin, name='reset_mpin'),
+#   path('api/reset-mpin/', reset_mpin, name='reset_mpin'),
   path('api/logout/', LogoutView.as_view(), name='auth_logout'),
   path('user-profile-view/<int:pk>/',UserProfileview.as_view()),
 
@@ -49,10 +49,7 @@ urlpatterns = [
 
   path('fund-transfer/',Fund_Transfer_views.as_view(),name='fund-transfer'),#for money transactions
   path('other-transactions/',OtherBank_Fund_Transfer_views.as_view(),name='other-transactions'), #for other bank fund transfer
-  path('user-fund-transfer-details/<int:id>/', LoggedUserTransactionsDetails.as_view(),name='user-fund-transfer-details') ,# retrive logged user transaction details details from
-
-
-  
+  path('user-fund-transfer-details/<int:id>/', LoggedUserTransactionsDetails.as_view(),name='user-fund-transfer-details') ,# retrieve logged user transaction details details from
 
 ]
 

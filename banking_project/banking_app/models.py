@@ -26,21 +26,8 @@ class CustomUser(AbstractUser):
     def _str_(self):
         return self.username
 
-class MPIN(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    mpin = models.CharField(max_length=6)
 
-    def __str__(self):
-        return f"{self.user.username}'s MPIN"
     
-class Transaction(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    description = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.user.username} - {self.amount}"
 
 class LoanApplication(models.Model):
     APPLICANT_STATUS_CHOICES = [
@@ -55,6 +42,8 @@ class LoanApplication(models.Model):
 
     def __str__(self):
         return f"{self.applicant.username}'s Loan Application"
+
+
 
 class Fund_transfer(models.Model):
     sender_user = models.ForeignKey('CustomUser',on_delete=models.CASCADE,

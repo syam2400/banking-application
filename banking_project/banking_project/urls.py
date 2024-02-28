@@ -29,10 +29,7 @@ from rest_framework.response import Response
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("",include('banking_app.urls')),
-     path('api/create-transaction/', create_transaction, name='create_transaction'),
-    path('api/get-transactions/', get_transactions, name='get_transactions'),
-    # path('login/token/', LoginView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
     
   
 ]
