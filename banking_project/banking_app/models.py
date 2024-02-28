@@ -36,9 +36,13 @@ class Fund_transfer(models.Model):
     fund_receiving_other_bank_user = models.CharField(max_length=30,null=True, blank=True)
     amount = models.PositiveIntegerField(default=0)
     mpin = models.PositiveIntegerField(default=0,null=True,blank=True)
+    bill_payments = models.CharField(max_length=30,null=True, blank=True)
     
     def __str__(self):
-        if self.fund_receiving_other_bank_user:
+        if self.receiving_account_holder_name:
+            return str(f'{self.sender_user}-{self.transaction_id}-{self.receiving_account_holder_name}')
+        elif self.fund_receiving_other_bank_user:
             return str(f'{self.sender_user}-{self.transaction_id}-{self.fund_receiving_other_bank_user}')
         else:
-           return str(f'{self.sender_user}-{self.transaction_id}-{self.receiving_account_holder_name}')
+           return str(f'{self.sender_user}-{self.transaction_id}-{self.bill_payments}')
+           

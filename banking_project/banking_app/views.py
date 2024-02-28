@@ -326,3 +326,46 @@ class LoggedUserTransactionsDetails(APIView):
       
         return Response(transaction_Serilizer.data,status=status.HTTP_200_OK)
         
+#payment setup through banking app
+class PayBills(APIView):
+    permission_classes = [AllowAny]
+    # queryset = Fund_transfer.objects.all()
+    # serializer_class = PayBilllsSerializer
+    def post(self, request, *args, **kwargs):
+        paybills_serializer = PayBillsSerializer(data=request.data)
+
+        if paybills_serializer.is_valid():
+
+            payment_for = paybills_serializer.validated_data.get('payment_for')
+            user_id = paybills_serializer.validated_data.get('logged_user_id')
+            logged_user = get_object_or_404(CustomUser,pk=user_id)
+            bill_amount = paybills_serializer.validated_data.get('payment_amount')
+            mpin = paybills_serializer.validated_data.get('mpin')
+
+            if int(logged_user.account_balance) < int(bill_amount):
+                return Response({"status": "insufficent account balance"},status=status.HTTP_400_BAD_REQUEST)
+            
+            
+            logged_user = authenticate(username=logged_user.username, password=mpin)
+            if  logged_user is not None:
+                with transaction.atomic():
+                        logged_user.account_balance  -= int(bill_amount)
+                        logged_user.save()
+
+                        confirm_bill_payment = Fund_transfer.objects.create(sender_user= logged_user,bill_payments=payment_for,
+                                                                         amount=bill_amount)
+                        
+                        return Response({'message':'bill payment succesfully done'}, status=status.HTTP_201_CREATED)
+            else:      
+              return Response({'message':"invalid mpin"}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+        else:
+            return Response(paybills_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+                                                      
+            
+
+
+
+
+
+

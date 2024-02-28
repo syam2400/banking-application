@@ -68,3 +68,10 @@ class Fund_transfer_serializers(serializers.Serializer):
 
 
 
+class PayBillsSerializer(serializers.Serializer):
+    payment_for = serializers.CharField(max_length=30,write_only=True)
+    logged_user_id = serializers.IntegerField(default=0,write_only=True)
+    payment_amount = serializers.IntegerField(default=0,write_only=True)
+    mpin = serializers.IntegerField(default=0,write_only=True)
+
+  

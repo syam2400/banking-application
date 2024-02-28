@@ -42,8 +42,8 @@ urlpatterns = [
   path('fund-transfer/',Fund_Transfer_views.as_view(),name='fund-transfer'),#for money transactions
   path('other-transactions/',OtherBank_Fund_Transfer_views.as_view(),name='other-transactions'), #for other bank fund transfer
 
-  path('user-fund-transfer-details/<int:id>/', LoggedUserTransactionsDetails.as_view(),name='user-fund-transfer-details') ,# retrive logged user transaction details details from
-
+  path('user-fund-transfer-details/<int:id>/', LoggedUserTransactionsDetails.as_view(),name='user-fund-transfer-details'),# retrive logged user transaction details details from
+  path('user-paybills/',PayBills.as_view(),name='paybills')#bill payment 
 
   
 
