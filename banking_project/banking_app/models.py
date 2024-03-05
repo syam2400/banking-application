@@ -37,6 +37,9 @@ class Fund_transfer(models.Model):
     amount = models.PositiveIntegerField(default=0)
     mpin = models.PositiveIntegerField(default=0,null=True,blank=True)
     bill_payments = models.CharField(max_length=30,null=True, blank=True)
+    date_of_transaction = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+
     
     def __str__(self):
         if self.receiving_account_holder_name:
