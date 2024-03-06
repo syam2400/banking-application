@@ -19,17 +19,21 @@ from django.contrib import admin
 from django.urls import path,include
 # from transactions.views import create_transaction, get_transactions
 
-# from banking_app.views import LoginView
-from rest_framework.decorators import action
-from rest_framework.response import Response
-
+from drf_spectacular.views import *
 
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("",include('banking_app.urls')),
-    
+   
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+    # YOUR PATTERNS
+    path('schema/', SpectacularAPIView.as_view(), name='schema'),
+    # Optional UI:
+    path('schema/docs/', SpectacularSwaggerView.as_view(url_name='schema')),
+    # path('schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     
   
 ]

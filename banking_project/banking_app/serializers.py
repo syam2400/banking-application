@@ -58,11 +58,15 @@ class App_register_serializers(serializers.Serializer):
 
   #fund transfer
 class User_fund_transfer_serializers(serializers.ModelSerializer):
+    sender_user_username = serializers.CharField(source='sender_user.username', read_only=True)
+    receiving_account_holder_name_username = serializers.CharField(source='receiving_account_holder_name.username', read_only=True)
+    user_bill_payments = serializers.CharField(source='bill_payments', read_only=True)
+    date_of_transaction = serializers.DateTimeField(read_only=True)
 
     class Meta:
-            model = Fund_transfer
-            fields = ['sender_user','transaction_id','ifsc','receiving_account_holder_name',
-                      'fund_receiving_other_bank_user','account_number','amount']
+        model = Fund_transfer
+        fields = ['sender_user_username', 'receiving_account_holder_name_username','user_bill_payments', 'transaction_id', 'ifsc', 'account_number', 'amount','date_of_transaction']
+      
 
    
 

@@ -38,11 +38,26 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles','rest_framework','banking_app',
-    'rest_framework_simplejwt.token_blacklist','rest_framework_simplejwt',
-    'rest_framework_jwt',
+    'django.contrib.staticfiles',
+    'rest_framework',
+    'banking_app',
+    'rest_framework_simplejwt.token_blacklist',
+    'rest_framework_simplejwt',
+    'drf_spectacular',
     
 ]
+
+
+
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'BANKING APPLICATION API',
+    'DESCRIPTION': 'BANKING APPLICATION API WHICH IS USER FOR BASIC BANKING  FUNCTIONALITIES WITH A SECURED MANNER',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
+}
+
 
 
 REST_FRAMEWORK = {
@@ -54,7 +69,11 @@ REST_FRAMEWORK = {
      'DEFAULT_AUTHENTICATION_CLASSES': (
        
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+        
+    ),'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 5
 }
 
 

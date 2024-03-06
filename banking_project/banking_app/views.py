@@ -32,6 +32,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 
 from django.db import transaction
+from rest_framework.pagination import PageNumberPagination
 
 
 # registration class for signup and get the registered user details 
@@ -205,7 +206,7 @@ class LogoutView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         
 #to view the details of particular logged user
-class UserProfileview(generics.RetrieveUpdateDestroyAPIView):
+class UserProfileview(generics.RetrieveAPIView):
     permission_classes =  [AllowAny]
     queryset = CustomUser.objects.all()
     serializer_class = Profileview_serializers
@@ -248,11 +249,10 @@ class Fund_Transfer_views(APIView):
                         account_holder_name.save()
 
                         # Create the Fund_transfer object
-                        confirm_transfer = Fund_transfer.objects.create(sender_user=user,account_number=account_holder_name.account_number,
+                        confirm_transfer = Fund_transfer.objects.create(sender_user=user.username,account_number=account_holder_name.account_number,
                                                                         ifsc=request.data.get('ifsc'),receiving_account_holder_name=account_holder_name,
                                                                         amount=amount)
-                      
-                        print('confirm_transfer')
+                    
                         return Response({'message':'fund tranfered succesfully'}, status=status.HTTP_201_CREATED)
             else:      
               return Response({'message':"invalid mpin"}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
@@ -316,12 +316,17 @@ class LoggedUserTransactionsDetails(APIView):
     def get(self, request,id):
         # logged_user = request.data.get('pk')
         user = get_object_or_404(CustomUser,id=id)
-        print(user.id)
+       
         current_user_transaction = Fund_transfer.objects.filter(sender_user=user)
-        print(current_user_transaction)
-        transaction_Serilizer = User_fund_transfer_serializers(current_user_transaction, many=True)
+        
+        paginator = PageNumberPagination()
+        paginator.page_size = 3
+        result_page = paginator.paginate_queryset(current_user_transaction, request)
+        
+        transaction_Serilizer = User_fund_transfer_serializers(result_page, many=True)
+        return paginator.get_paginated_response(transaction_Serilizer.data)
       
-        return Response(transaction_Serilizer.data,status=status.HTTP_200_OK)
+      
         
 #payment setup through banking app
 class PayBills(APIView):
@@ -347,6 +352,7 @@ class PayBills(APIView):
             if  logged_user is not None:
                 with transaction.atomic():
                         logged_user.account_balance  -= int(bill_amount)
+                        
                         logged_user.save()
 
                         confirm_bill_payment = Fund_transfer.objects.create(sender_user= logged_user,bill_payments=payment_for,
@@ -360,7 +366,6 @@ class PayBills(APIView):
 
                                                       
             
-
 
 
 
