@@ -21,7 +21,7 @@ from django.urls import path,include
 
 from drf_spectacular.views import *
 
-
+from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
