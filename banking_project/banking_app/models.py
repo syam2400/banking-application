@@ -1,6 +1,6 @@
 import uuid
 from django.db import models
-from django.contrib.auth.models import User
+
 
 from django.contrib.auth.models import AbstractUser
 
@@ -26,13 +26,14 @@ class LoanApplication(models.Model):
         ('APPROVED', 'Approved'),
         ('REJECTED', 'Rejected'),
     ]
-    applicant = models.ForeignKey(User, on_delete=models.CASCADE)
+    applicant = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     amount_requested = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=APPLICANT_STATUS_CHOICES, default='PENDING')
     # Add other fields as needed
 
     def __str__(self):
         return f"{self.applicant.username}'s Loan Application"
+
 
 
 

@@ -66,7 +66,7 @@ class RegisterUser(generics.CreateAPIView):
 
 
 
-#app registraion and forgot password
+#app registration and forgot password
 class User_registration_and_mpin(APIView):
    permission_classes =  [AllowAny]
     # queryset = CustomUser.objects.all()
@@ -150,7 +150,7 @@ class Reset_password(APIView):
                 success_msg = 'Password validation failed re-enter password'
                 return render(request,'banking_app/templates/email-template.html',{"success_msg":success_msg})
         else:
-            success_msg = 'token is invalid create a new requeset'
+            success_msg = 'token is invalid create a new request'
             return render(request,'banking_app/templates/email-template.html',{"success_msg":success_msg})
 
 
