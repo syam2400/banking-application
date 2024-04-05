@@ -1,190 +1,80 @@
-openapi: 3.0.2
+openapi: 3.0.3
 info:
-  title: ''
-  version: ''
+  title: BANKING APPLICATION API
+  version: 1.0.0
+  description: BANKING APPLICATION API WHICH IS USER FOR BASIC BANKING  FUNCTIONALITIES
+    WITH A SECURED MANNER
 paths:
-  /user-profile-view/{id}/:
-    get:
-      operationId: retrieveCustomUser
-      description: ''
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: A unique integer value identifying this user.
-        schema:
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Profileview_s'
-          description: ''
-      tags:
-      - user-profile-view
-    put:
-      operationId: updateCustomUser
-      description: ''
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: A unique integer value identifying this user.
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Profileview_s'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Profileview_s'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Profileview_s'
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Profileview_s'
-          description: ''
-      tags:
-      - user-profile-view
-    patch:
-      operationId: partialUpdateCustomUser
-      description: ''
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: A unique integer value identifying this user.
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Profileview_s'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Profileview_s'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Profileview_s'
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Profileview_s'
-          description: ''
-      tags:
-      - user-profile-view
-    delete:
-      operationId: destroyCustomUser
-      description: ''
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: A unique integer value identifying this user.
-        schema:
-          type: string
-      responses:
-        '204':
-          description: ''
-      tags:
-      - user-profile-view
-  /user-fund-transfer-details/{id}/:
-    get:
-      operationId: retrieveLoggedUserTransactionsDetails
-      description: ''
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: ''
-        schema:
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema: {}
-          description: ''
-      tags:
-      - user-fund-transfer-details
-  /api/schema/:
-    get:
-      operationId: listSpectaculars
-      description: 'OpenApi3 schema for this API. Format can be selected via content
-        negotiation.
-
-
-        - YAML: application/vnd.oai.openapi
-
-        - JSON: application/vnd.oai.openapi+json'
-      parameters: []
-      responses:
-        '200':
-          content:
-            application/vnd.oai.openapi:
-              schema:
-                type: array
-                items: {}
-            application/yaml:
-              schema:
-                type: array
-                items: {}
-            application/vnd.oai.openapi+json:
-              schema:
-                type: array
-                items: {}
-            application/json:
-              schema:
-                type: array
-                items: {}
-          description: ''
+  /api/logout/:
+    post:
+      operationId: api_logout_create
       tags:
       - api
-  /api/schema/swagger-ui/:
-    get:
-      operationId: listSpectacularSwaggers
-      description: ''
-      parameters: []
+      security:
+      - jwtAuth: []
       responses:
         '200':
-          content:
-            text/html:
-              schema:
-                type: array
-                items: {}
-          description: ''
+          description: No response body
+  /fund-transfer/:
+    post:
+      operationId: fund_transfer_create
       tags:
-      - api
-  /api/schema/redoc/:
-    get:
-      operationId: listSpectacularRedocs
-      description: ''
-      parameters: []
+      - fund-transfer
+      security:
+      - jwtAuth: []
+      - {}
       responses:
         '200':
-          content:
-            text/html:
-              schema:
-                type: array
-                items: {}
-          description: ''
+          description: No response body
+  /other-transactions/:
+    post:
+      operationId: other_transactions_create
       tags:
-      - api
+      - other-transactions
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /password-reset-view/:
+    post:
+      operationId: password_reset_view_create
+      tags:
+      - password-reset-view
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /password-reset/confirm/{uidb64}/{token}/:
+    post:
+      operationId: password_reset_confirm_create
+      parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: uidb64
+        schema:
+          type: string
+        required: true
+      tags:
+      - password-reset
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
   /register-user/:
     post:
-      operationId: createCustomUser
-      description: ''
-      parameters: []
+      operationId: register_user_create
+      tags:
+      - register-user
       requestBody:
         content:
           application/json:
@@ -196,6 +86,10 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
       responses:
         '201':
           content:
@@ -203,13 +97,55 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
           description: ''
+  /token/refresh/:
+    post:
+      operationId: token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
       tags:
-      - register-user
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /user-fund-transfer-details/{id}/:
+    get:
+      operationId: user_fund_transfer_details_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - user-fund-transfer-details
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
   /user-login-get-token/:
     post:
-      operationId: createCustomUser
-      description: ''
-      parameters: []
+      operationId: user_login_get_token_create
+      tags:
+      - user-login-get-token
       requestBody:
         content:
           application/json:
@@ -221,6 +157,10 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/UserLogin'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
       responses:
         '201':
           content:
@@ -228,177 +168,41 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserLogin'
           description: ''
-      tags:
-      - user-login-get-token
-  /api/logout/:
-    post:
-      operationId: createLogout
-      description: ''
-      parameters: []
-      requestBody:
-        content:
-          application/json:
-            schema: {}
-          application/x-www-form-urlencoded:
-            schema: {}
-          multipart/form-data:
-            schema: {}
-      responses:
-        '201':
-          content:
-            application/json:
-              schema: {}
-          description: ''
-      tags:
-      - api
-  /password-reset-view/:
-    post:
-      operationId: createUser_registration_and_mpin
-      description: ''
-      parameters: []
-      requestBody:
-        content:
-          application/json:
-            schema: {}
-          application/x-www-form-urlencoded:
-            schema: {}
-          multipart/form-data:
-            schema: {}
-      responses:
-        '201':
-          content:
-            application/json:
-              schema: {}
-          description: ''
-      tags:
-      - password-reset-view
-  /password-reset/confirm/{uidb64}/{token}/:
-    post:
-      operationId: createReset_password
-      description: ''
-      parameters:
-      - name: uidb64
-        in: path
-        required: true
-        description: ''
-        schema:
-          type: string
-      - name: token
-        in: path
-        required: true
-        description: ''
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema: {}
-          application/x-www-form-urlencoded:
-            schema: {}
-          multipart/form-data:
-            schema: {}
-      responses:
-        '201':
-          content:
-            application/json:
-              schema: {}
-          description: ''
-      tags:
-      - password-reset
-  /fund-transfer/:
-    post:
-      operationId: createFund_Transfer_views
-      description: ''
-      parameters: []
-      requestBody:
-        content:
-          application/json:
-            schema: {}
-          application/x-www-form-urlencoded:
-            schema: {}
-          multipart/form-data:
-            schema: {}
-      responses:
-        '201':
-          content:
-            application/json:
-              schema: {}
-          description: ''
-      tags:
-      - fund-transfer
-  /other-transactions/:
-    post:
-      operationId: createOtherBank_Fund_Transfer_views
-      description: ''
-      parameters: []
-      requestBody:
-        content:
-          application/json:
-            schema: {}
-          application/x-www-form-urlencoded:
-            schema: {}
-          multipart/form-data:
-            schema: {}
-      responses:
-        '201':
-          content:
-            application/json:
-              schema: {}
-          description: ''
-      tags:
-      - other-transactions
   /user-paybills/:
     post:
-      operationId: createPayBills
-      description: ''
-      parameters: []
-      requestBody:
-        content:
-          application/json:
-            schema: {}
-          application/x-www-form-urlencoded:
-            schema: {}
-          multipart/form-data:
-            schema: {}
-      responses:
-        '201':
-          content:
-            application/json:
-              schema: {}
-          description: ''
+      operationId: user_paybills_create
       tags:
       - user-paybills
-  /token/refresh/:
-    post:
-      operationId: createTokenRefresh
-      description: 'Takes a refresh type JSON web token and returns an access type
-        JSON web
-
-        token if the refresh token is valid.'
-      parameters: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TokenRefresh'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/TokenRefresh'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/TokenRefresh'
+      security:
+      - jwtAuth: []
+      - {}
       responses:
-        '201':
+        '200':
+          description: No response body
+  /user-profile-view/{id}/:
+    get:
+      operationId: user_profile_view_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - user-profile-view
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenRefresh'
+                $ref: '#/components/schemas/Profileview_serializers'
           description: ''
-      tags:
-      - token
 components:
   schemas:
-    Profileview_s:
+    Profileview_serializers:
       type: object
       properties:
         id:
@@ -413,13 +217,14 @@ components:
           nullable: true
         is_superuser:
           type: boolean
+          title: Superuser status
           description: Designates that this user has all permissions without explicitly
             assigning them.
         username:
           type: string
           description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
             only.
-          pattern: ^[\w.@+-]+\z
+          pattern: ^[\w.@+-]+$
           maxLength: 150
         first_name:
           type: string
@@ -430,12 +235,15 @@ components:
         email:
           type: string
           format: email
+          title: Email address
           maxLength: 254
         is_staff:
           type: boolean
+          title: Staff status
           description: Designates whether the user can log into this admin site.
         is_active:
           type: boolean
+          title: Active
           description: Designates whether this user should be treated as active. Unselect
             this instead of deleting accounts.
         date_joined:
@@ -447,21 +255,21 @@ components:
         phone:
           type: integer
           maximum: 9223372036854775807
+          minimum: 0
           format: int64
           nullable: true
-          minimum: 0
         mpin:
           type: integer
           maximum: 9223372036854775807
+          minimum: 0
           format: int64
           nullable: true
-          minimum: 0
         account_number:
           type: integer
           maximum: 9223372036854775807
+          minimum: 0
           format: int64
           nullable: true
-          minimum: 0
         ifsc:
           type: string
           nullable: true
@@ -469,9 +277,9 @@ components:
         account_balance:
           type: integer
           maximum: 9223372036854775807
+          minimum: 0
           format: int64
           nullable: true
-          minimum: 0
         groups:
           type: array
           items:
@@ -484,8 +292,20 @@ components:
             type: integer
           description: Specific permissions for this user.
       required:
+      - id
       - password
       - username
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
     User:
       type: object
       properties:
@@ -496,24 +316,25 @@ components:
           type: string
           description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
             only.
-          pattern: ^[\w.@+-]+\z
+          pattern: ^[\w.@+-]+$
           maxLength: 150
         phone:
           type: integer
           maximum: 9223372036854775807
+          minimum: 0
           format: int64
           nullable: true
-          minimum: 0
         email:
           type: string
           format: email
+          title: Email address
           maxLength: 254
         account_number:
           type: integer
           maximum: 9223372036854775807
+          minimum: 0
           format: int64
           nullable: true
-          minimum: 0
         ifsc:
           type: string
           nullable: true
@@ -521,15 +342,16 @@ components:
         account_balance:
           type: integer
           maximum: 9223372036854775807
+          minimum: 0
           format: int64
           nullable: true
-          minimum: 0
         mpin:
           type: string
           writeOnly: true
       required:
-      - username
+      - id
       - mpin
+      - username
     UserLogin:
       type: object
       properties:
@@ -541,15 +363,10 @@ components:
           writeOnly: true
           maxLength: 128
       required:
-      - username
       - mpin
-    TokenRefresh:
-      type: object
-      properties:
-        refresh:
-          type: string
-        access:
-          type: string
-          readOnly: true
-      required:
-      - refresh
+      - username
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

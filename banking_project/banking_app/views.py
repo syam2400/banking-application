@@ -75,8 +75,6 @@ class RegisterUser(generics.CreateAPIView):
 #app registraion and forgot password
 class User_registration_and_mpin(APIView):
    permission_classes =  [AllowAny]
-    # queryset = CustomUser.objects.all()
-    # serializer_class = UserSerializer
    
    def post(self, request, *args, **kwargs):
        
@@ -178,13 +176,14 @@ class UserLoginAPIView(generics.CreateAPIView):
                 refresh = RefreshToken.for_user(user)
                 serialized_user = UserSerializer(user)
                 return Response({
+                    'status_code':1,
                     'user': serialized_user.data,
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
                     'status': f"{user.username} logged in successfully",
                 })
             else:
-                return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({'status':0,'error_message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -210,14 +209,14 @@ class LogoutView(APIView):
 
 #to view the details of particular logged user
 class UserProfileview(generics.RetrieveAPIView):
-    permission_classes =  [AllowAny]
+    # permission_classes =  [AllowAny]
     queryset = CustomUser.objects.all()
     serializer_class = Profileview_serializers
 
 
 #FUND TRANSFER TO SAME BANK USER
 class Fund_Transfer_views(APIView):
-    permission_classes = [AllowAny]
+    # permission_classes = [AllowAny]
    
     def post(self, request, *args, **kwargs):
         
@@ -252,7 +251,7 @@ class Fund_Transfer_views(APIView):
                         account_holder_name.save()
 
                         # Create the Fund_transfer object
-                        confirm_transfer = Fund_transfer.objects.create(sender_user=user.username,account_number=account_holder_name.account_number,
+                        confirm_transfer = Fund_transfer.objects.create(sender_user=user,account_number=account_holder_name.account_number,
                                                                         ifsc=request.data.get('ifsc'),receiving_account_holder_name=account_holder_name,
                                                                         amount=amount)
                     
@@ -266,7 +265,7 @@ class Fund_Transfer_views(APIView):
 
 #fund transfer to other banks
 class OtherBank_Fund_Transfer_views(APIView):
-    permission_classes = [AllowAny]
+    # permission_classes = [AllowAny]
    
     def post(self, request, *args, **kwargs):
         
@@ -312,10 +311,8 @@ class OtherBank_Fund_Transfer_views(APIView):
 
 #USER TRANSACTIONS DETAILS
 class LoggedUserTransactionsDetails(APIView):
-    permission_classes = [AllowAny]
-    # queryset = Fund_transfer.objects.all()
-    # serializer_class = User_fund_transfer_serializers
-    # lookup_fields = 'id'
+    # permission_classes = [AllowAny]
+
     def get(self, request,id):
         # logged_user = request.data.get('pk')
         user = get_object_or_404(CustomUser,id=id)
@@ -333,9 +330,8 @@ class LoggedUserTransactionsDetails(APIView):
         
 #payment setup through banking app
 class PayBills(APIView):
-    permission_classes = [AllowAny]
-    # queryset = Fund_transfer.objects.all()
-    # serializer_class = PayBilllsSerializer
+    # permission_classes = [AllowAny]
+   
     def post(self, request, *args, **kwargs):
         paybills_serializer = PayBillsSerializer(data=request.data)
 

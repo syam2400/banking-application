@@ -33,7 +33,7 @@ urlpatterns = [
 
   path('user-profile-view/<int:pk>/',UserProfileview.as_view()), #user profile details
 
-  path('password-reset-view/',User_registration_and_mpin.as_view(),name='initiate-password-reset'),#app registration and frogot password
+  path('password-reset-view/',User_registration_and_mpin.as_view(),name='initiate-password-reset'),#app registration and forgot password
   #custom template for password reset 
   path('new-password/confirm/<str:uidb64>/<str:token>/', CustomPasswordResetConfirmView.as_view(), name='new_password_reset_confirm'),
   #after submit new mpin template  redirect to this class for create a new pin ,,,
